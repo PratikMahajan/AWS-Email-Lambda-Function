@@ -97,7 +97,9 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
             context.getLogger().log("SNS Null Event");
         }else {
             context.getLogger().log("Number of Records: "+snsEvent.getRecords().size());
-            String email = snsEvent.getRecords().get(0).getSNS().getMessage();
+            String snsmsg = snsEvent.getRecords().get(0).getSNS().getMessage();
+            String[] msg=snsmsg.split(",");
+	    String email = msg[0];
             context.getLogger().log("Record Message: "+email);
             try{
                 Item item = getItem(email,context);
