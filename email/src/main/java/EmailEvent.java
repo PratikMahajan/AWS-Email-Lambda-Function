@@ -59,8 +59,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 	        }
 	}	
 	sb.append("</p>");
-        String content = BODY+email+"</p><p>link to reset password: "+
-                "<a href='#'>http://"+DOMAIN+"/reset?email="+email+"&token="+token+"</a></p>";
+        String content = sb.toString();
 
         SendEmailRequest request = new SendEmailRequest().withDestination(new Destination().withToAddresses(email))
                 .withMessage(new Message()
