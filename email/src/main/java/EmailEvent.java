@@ -33,7 +33,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
     private static final long TTL = Long.parseLong(System.getenv("TTLinSec"));
 
     private static final String FROM = "admin@"+DOMAIN;
-    private static final String SUBJECT = "Password Reset Link";
+    private static final String SUBJECT = "Links to recipes";
     private static final String BODY = "<h1>AWS Recipe Management System</h1>"+ "<h3>Actioned required</h3>"
             + "<p>You are receiving this email in response to your get recipes request "
             + "for your AWS Recipe Management Account with UserId: ";
@@ -56,6 +56,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 	        	sb.append("/v1/recipe/");
 	        	sb.append(strg);
 	        	sb.append("</a>");
+			sb.append("<br>");
 	        }
 	}	
 	sb.append("</p>");
