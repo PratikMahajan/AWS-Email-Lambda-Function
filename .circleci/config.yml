@@ -44,4 +44,4 @@ jobs:
           command : |
             cd email/target
             aws lambda update-function-code --region=${aws_region} --function-name=${lambda_func_name} --s3-bucket=${AWS_LAMBDA_BUCKET} --s3-key="email-1.0-SNAPSHOT-${CIRCLE_BUILD_NUM}.jar"
-            aws lambda update-function-configuration --function-name=${lambda_func_name} --environment "Variables={\"TTLinSec\":${TTLinsec}}"
+            aws lambda update-function-configuration --function-name=${lambda_func_name} --environment Variables={TTLinSec=${TTLinsec}}
