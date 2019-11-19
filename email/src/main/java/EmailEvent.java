@@ -19,7 +19,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.lang.StringBuffer;
 public class EmailEvent implements RequestHandler<SNSEvent, Object> {
     static final AmazonDynamoDB DYNAMO_DB = AmazonDynamoDBClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
     static final AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard().withRegion(Regions.US_EAST_1).build();
@@ -28,15 +30,35 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 
     private static final String DOMAIN = System.getenv("DOMAIN");
     private static final String TABLE = System.getenv("TABLE");
+    private static final String TTL = System.getenv("TTLinSec");
 
     private static final String FROM = "admin@"+DOMAIN;
     private static final String SUBJECT = "Password Reset Link";
-    private static final String BODY = "<h1>AWS Library Management System</h1>"+ "<h3>Actioned required</h3>"
-            + "<p>You are receiving this email in response to your password reset request "
-            + "for your AWS Library Management Account with LoginId: ";
+    private static final String BODY = "<h1>AWS Recipe Management System</h1>"+ "<h3>Actioned required</h3>"
+            + "<p>You are receiving this email in response to your get recipes request "
+            + "for your AWS Recipe Management Account with UserId: ";
 
-    private void sendEmail(String email, String token) throws Exception{
-        
+    private void sendEmail(String email, String token,List<String> ls) throws Exception{
+        StringBuffer sb = new StringBuffer();
+	sb.append(BODY);
+	sb.append(email);
+        sb.append("</p><p>Links to recipes: ");
+	if(ls.size()==0)
+	{
+		sb.append("<a> Sorry!! you have not created any recipes as of now </a>"); 
+	}
+	else
+	{
+                for(String strg : ls)
+	        {
+	        	sb.append("<a href='#'>http://");
+	        	sb.append(DOMAIN);
+	        	sb.append("/v1/recipe/");
+	        	sb.append(strg);
+	        	sb.append("</a>");
+	        }
+	}	
+	sb.append("</p>");
         String content = BODY+email+"</p><p>link to reset password: "+
                 "<a href='#'>http://"+DOMAIN+"/reset?email="+email+"&token="+token+"</a></p>";
 
@@ -54,7 +76,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
         context.getLogger().log("----In Put");
         DynamoDB dynamoDB = new DynamoDB(DYNAMO_DB);
         Table table = dynamoDB.getTable(TABLE);
-        long timeStamp = (Instant.now().getMillis()/1000L)+(2*60);
+        long timeStamp = (Instant.now().getMillis()/1000L)+(TTL);
         context.getLogger().log("----------------------------TimeStamp_Set: "+timeStamp);
         context.getLogger().log("----------------------------Current_Set: "+(Instant.now().getMillis()/1000));
         Item item = new Item()
@@ -100,6 +122,12 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
             String snsmsg = snsEvent.getRecords().get(0).getSNS().getMessage();
             String[] msg=snsmsg.split(",");
 	    String email = msg[0];
+	    List<String> ls = new ArrayList<>();
+	    for(int i=1;i<msg.length();i++)
+	    {
+		    ls.append(msg[i]);
+
+	    }
             context.getLogger().log("Record Message: "+email);
             try{
                 Item item = getItem(email,context);
@@ -108,7 +136,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
                     putItem(email,context);
                     item = getItem(email,context);
                     tokenVal = (String)item.get("token");
-                    sendEmail(email, tokenVal);
+                    sendEmail(email, tokenVal, ls);
                     context.getLogger().log("Email Sent!");
                     timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss").format(Calendar.getInstance().getTime());
                     context.getLogger().log("Invocation Completed: "+timeStamp);
@@ -118,12 +146,12 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
                 long timeStampVal = Long.parseLong(item.get("timeStamp").toString());
                 long currentTime = (Instant.now().getMillis()/1000L);
                 context.getLogger().log("----------------------------TimeStamp_Set: "+timeStampVal);
-                context.getLogger().log("----------------------------Current_Set: "+(Instant.now().getMillis()/1000L));
+                context.getLogger().log("----------------------------Current_Set: "+currentTime);
                 if(timeStampVal<currentTime){
                     updateItem(email, context);
                     item = getItem(email,context);
                     tokenVal = (String)item.get("token");
-                    sendEmail(email, tokenVal);
+                    sendEmail(email, tokenVal,ls);
                     context.getLogger().log("Email Sent!");
                 }else {
                     context.getLogger().log("Email Sent already!");
