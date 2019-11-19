@@ -28,8 +28,8 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 
 //    static final Calendar CALENDAR = Calendar.getInstance();
 
-    private static final String DOMAIN = System.getenv("DOMAIN");
-    private static final String TABLE = System.getenv("TABLE");
+    private static final String DOMAIN = System.getenv("domainName");
+    private static final String TABLE = System.getenv("DynamoTable");
     private static final long TTL = Long.parseLong(System.getenv("TTLinSec"));
 
     private static final String FROM = "admin@"+DOMAIN;
