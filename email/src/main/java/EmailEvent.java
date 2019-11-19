@@ -30,7 +30,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 
     private static final String DOMAIN = System.getenv("DOMAIN");
     private static final String TABLE = System.getenv("TABLE");
-    private static final String TTL = System.getenv("TTLinSec");
+    private static final long TTL = Long.parseLong(System.getenv("TTLinSec"));
 
     private static final String FROM = "admin@"+DOMAIN;
     private static final String SUBJECT = "Password Reset Link";
@@ -123,9 +123,9 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
             String[] msg=snsmsg.split(",");
 	    String email = msg[0];
 	    List<String> ls = new ArrayList<>();
-	    for(int i=1;i<msg.length();i++)
+	    for(int i=1;i<msg.length;i++)
 	    {
-		    ls.append(msg[i]);
+		    ls.add(msg[i]);
 
 	    }
             context.getLogger().log("Record Message: "+email);
