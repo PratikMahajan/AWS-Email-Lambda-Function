@@ -51,7 +51,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 	{
                 for(String strg : ls)
 	        {
-	        	sb.append("<a href='#'>http://");
+	        	sb.append("<a href='#'>https://");
 	        	sb.append(DOMAIN);
 	        	sb.append("/v1/recipe/");
 	        	sb.append(strg);
