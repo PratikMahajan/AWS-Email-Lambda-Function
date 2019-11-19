@@ -34,7 +34,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 
     private static final String FROM = "admin@"+DOMAIN;
     private static final String SUBJECT = "Links to recipes";
-    private static final String BODY = "<h1>AWS Recipe Management System</h1>"+ "<h3>Actioned required</h3>"
+    private static final String BODY = "<h1>AWS Recipe Management System</h1>"
             + "<p>You are receiving this email in response to your get recipes request "
             + "for your AWS Recipe Management Account with UserId: ";
 
@@ -43,6 +43,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 	sb.append(BODY);
 	sb.append(email);
         sb.append("</p><p>Links to recipes: ");
+	sb.append("<br>");
 	if(ls.size()==0)
 	{
 		sb.append("<a> Sorry!! you have not created any recipes as of now </a>"); 
