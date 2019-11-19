@@ -99,7 +99,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
         context.getLogger().log("----In Update");
         DynamoDB dynamoDB = new DynamoDB(DYNAMO_DB);
         Table table = dynamoDB.getTable(TABLE);
-        long timeStamp = (Instant.now().getMillis()/1000L)+(2*60);
+        long timeStamp = (Instant.now().getMillis()/1000L)+(TTL);
 
         Map<String, String> expressionAttributeNames = new HashMap<String, String>();
         expressionAttributeNames.put("#T", "token");
