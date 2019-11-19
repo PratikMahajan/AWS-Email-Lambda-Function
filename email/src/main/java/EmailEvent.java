@@ -26,8 +26,8 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
 
 //    static final Calendar CALENDAR = Calendar.getInstance();
 
-    private static final String DOMAIN = System.getenv("domain");
-    private static final String TABLE = System.getenv("table");
+    private static final String DOMAIN = System.getenv("DOMAIN");
+    private static final String TABLE = System.getenv("TABLE");
 
     private static final String FROM = "admin@"+DOMAIN;
     private static final String SUBJECT = "Password Reset Link";
