@@ -1,0 +1,46 @@
+
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    steps:
+      - checkout
+      - run :
+          name: Install Maven
+          command: |
+            sudo apt update
+            sudo apt install maven
+            mvn -version
+      - run:
+          name: Build WAR
+          command: |
+            cd email/
+            mvn package
+            cd target
+            ls -al
+            pwd
+      - run:
+          name: Install pip
+          command: |
+            sudo apt-get update || sudo apt-get update
+            sudo apt-get install python3
+            python3 --version
+            sudo apt install python3-pip
+            pip3 --version
+      - run:
+          name: AWS CLI Install 
+          command: sudo pip3 install awscli
+      - run:
+          name: Upload Artifact To S3
+          command: |            
+            echo "Uploading to S3 bucket"
+            pwd
+            cd email/target
+            mv email-1.0-SNAPSHOT.jar email-1.0-SNAPSHOT-${CIRCLE_BUILD_NUM}.jar
+            aws s3 cp email-1.0-SNAPSHOT-${CIRCLE_BUILD_NUM}.jar s3://${AWS_LAMBDA_BUCKET}
+      - run :
+          name : Updating Lambda Function 
+          command : |
+            cd email/target
+            aws lambda update-function-code --region=${aws_region} --function-name=${lambda_func_name} --s3-bucket=${AWS_LAMBDA_BUCKET} --s3-key="email-1.0-SNAPSHOT-${CIRCLE_BUILD_NUM}.jar"
