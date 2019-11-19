@@ -46,4 +46,4 @@ jobs:
             aws lambda update-function-code --region=${aws_region} --function-name=${lambda_func_name} --s3-bucket=${AWS_LAMBDA_BUCKET} --s3-key="email-1.0-SNAPSHOT-${CIRCLE_BUILD_NUM}.jar"
             envar={"Variables":{"TTLinSec":${TTLinsec},"domainName":"${domainName}","DynamoTable":"${DynamoTable}"}}
             echo $envar
-            aws lambda update-function-configuration --region=${aws_region} --function-name=${lambda_func_name} --environment $envar
+            aws lambda update-function-configuration --region=${aws_region} --function-name=${lambda_func_name} --environment "$envar"
