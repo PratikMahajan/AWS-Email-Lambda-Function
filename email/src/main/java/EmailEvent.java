@@ -58,7 +58,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
         context.getLogger().log("----------------------------TimeStamp_Set: "+timeStamp);
         context.getLogger().log("----------------------------Current_Set: "+(Instant.now().getMillis()/1000));
         Item item = new Item()
-                .withPrimaryKey("emailId", email)
+                .withPrimaryKey("id", email)
                 .withString("token", UUID.randomUUID().toString())
                 .withNumber("timeStamp", timeStamp);
         PutItemOutcome outcome = table.putItem(item);
@@ -68,7 +68,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
         context.getLogger().log("----In Get");
         DynamoDB dynamoDB = new DynamoDB(DYNAMO_DB);
         Table table = dynamoDB.getTable(TABLE);
-        Item item = table.getItem("emailId", email);
+        Item item = table.getItem("id", email);
         return item;
     }
 
@@ -86,7 +86,7 @@ public class EmailEvent implements RequestHandler<SNSEvent, Object> {
         expressionAttributeValues.put(":val1", UUID.randomUUID().toString());
         expressionAttributeValues.put(":val2", timeStamp);
 
-        UpdateItemOutcome outcome =  table.updateItem("emailId", email, "set #T = :val1, #S = :val2", expressionAttributeNames,
+        UpdateItemOutcome outcome =  table.updateItem("id", email, "set #T = :val1, #S = :val2", expressionAttributeNames,
                 expressionAttributeValues);
     }
 
